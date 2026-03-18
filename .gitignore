@@ -1,0 +1,13 @@
+.env
+data/agent.db
+data/linkedin_cookies.json
+data/post_image.png
+data/drafts/
+logs/
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+.DS_Store

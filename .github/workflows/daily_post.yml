@@ -1,0 +1,71 @@
+name: LinkedIn Daily Post
+
+on:
+  schedule:
+    - cron: '30 3 * * *'    # 9:00 AM IST (UTC+5:30) every day
+    - cron: '30 12 * * *'   # 6:00 PM IST (UTC+5:30) every day
+  workflow_dispatch:          # allow manual trigger from GitHub UI
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Playwright Chromium
+        run: playwright install chromium --with-deps
+
+      - name: Restore LinkedIn session cookies
+        # Cookies are stored as a GitHub Actions secret (base64-encoded JSON).
+        # Encode with: base64 -w 0 data/linkedin_cookies.json
+        # Add as secret: LINKEDIN_COOKIES_B64
+        run: |
+          mkdir -p data
+          echo "${{ secrets.LINKEDIN_COOKIES_B64 }}" | base64 -d > data/linkedin_cookies.json
+
+      - name: Run LinkedIn Agent
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          UNSPLASH_ACCESS_KEY:  ${{ secrets.UNSPLASH_ACCESS_KEY }}
+          LINKEDIN_EMAIL:       ${{ secrets.LINKEDIN_EMAIL }}
+          LINKEDIN_PASSWORD:    ${{ secrets.LINKEDIN_PASSWORD }}
+          PRODUCT_HUNT_TOKEN:   ${{ secrets.PRODUCT_HUNT_TOKEN }}
+          SLACK_WEBHOOK_URL:    ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: python main.py
+
+      - name: Upload agent logs
+        if: always()    # upload logs even on failure
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-logs-${{ github.run_number }}
+          path: logs/agent.log
+          retention-days: 14
+
+      - name: Upload post image
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: post-image-${{ github.run_number }}
+          path: data/post_image.png
+          retention-days: 7
+
+      - name: Upload drafts (if any failed posts)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: drafts-${{ github.run_number }}
+          path: data/drafts/
+          if-no-files-found: ignore
+          retention-days: 30

@@ -1,0 +1,10 @@
+  [FOUND (1 elements)                      ] get_by_text 'Start a post'
+  [FOUND (1 elements)                      ] get_by_text 'start a post'
+  [NOT FOUND (0 elements)                  ] placeholder *post
+  [NOT FOUND (0 elements)                  ] placeholder *Post
+  [NOT FOUND (0 elements)                  ] .share-box-feed-entry__trigger
+  [FOUND (6 elements)                      ] aria-label *post
+  [NOT FOUND (0 elements)                  ] aria-label *Post
+  [NOT FOUND (0 elements)                  ] data-control-name share
+  [FOUND (4 elements)                      ] button + 'post' text
+  [NOT FOUND (0 elements)                  ] .share-creation-state__content
