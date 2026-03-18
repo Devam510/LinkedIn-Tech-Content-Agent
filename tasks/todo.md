@@ -67,6 +67,7 @@
 - [x] Fix post typing (missing first chars) — switch to `insert_text`
 - [x] Fix image relevance — extract og:image from source article URL
 - [x] Run 3 full dry-runs end-to-end; validate output quality
+- [x] Fix Playwright GitHub Action ubuntu-latest error (via Copilot apt-get fix)
 - [x] Deploy and monitor for 1 week
 
 ---
