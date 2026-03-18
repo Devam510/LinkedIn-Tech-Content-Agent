@@ -287,10 +287,17 @@ def _post_attempt(post_text: str, image_path: str | None) -> None:
 
         _human_delay(4, 7)
 
+        # ── Step 4 (NEW): Automated Networking ────────────────────────────
+        try:
+            from poster.linkedin_networker import send_connection_requests
+            send_connection_requests(page)
+        except Exception as e:
+            log.error(f"[Networker] Failed during connection requests: {e}")
+
         # Save refreshed cookies
         save_session(ctx)
         browser.close()
-        log.info("[Poster] Post published successfully! ✓")
+        log.info("[Poster] Post & Networking published successfully! ✓")
 
 
 def post_to_linkedin(post_text: str, image_path: str | None = None, item: dict | None = None) -> bool:

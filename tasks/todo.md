@@ -71,6 +71,16 @@
 
 ---
 
+## Phase 6 — Network Automation
+
+- [x] Implement `poster/linkedin_networker.py` to navigate to My Network
+- [x] Safe logic to find "Connect" buttons and loop (MAX_CONNECTIONS_PER_RUN = 5)
+- [x] Handle "Add a note" / "Send without a note" modals
+- [x] Wire `send_connection_requests` into `main.py`
+- [x] Test with headful dry run
+
+---
+
 ## Review
 
 ### Phase 1 Review
