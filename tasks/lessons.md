@@ -104,8 +104,9 @@
 - **Root cause**: Free open-access APIs get rate-limited or overloaded easily during peak hours.
 - **Rule**: Always wrap free image API calls in `try...except` block, catch `requests.exceptions.RequestException`, and gracefully fall back to the next reliable source (like `og:image` or `Unsplash`) so the entire posting script doesn't crash.
 
-### Playwright 1.44 fails to install on ubuntu-latest (Ubuntu 24.04)
+### Workflow Failure: Moving Target "Latest" OS
 - **Date**: 2026-03-19
-- **What happened**: GitHub Actions job failed at `playwright install chromium --with-deps` with error `Package 'libasound2' has no installation candidate`.
-- **Root cause**: GitHub upgraded `ubuntu-latest` to Ubuntu 24.04. That version renamed `libasound2` → `libasound2t64`. `libasound2-plugins` is NOT a substitute.
-- **Rule**: Before `playwright install chromium --with-deps`, explicitly add to the workflow: `sudo apt-get install -y libasound2t64`. Use `libasound2t64` — never `libasound2` or `libasound2-plugins` — on Ubuntu 24.04+.
+- **What happened**: GitHub Actions failed with `libasound2` missing after GitHub upgraded `ubuntu-latest` to 24.04 (Noble).
+- **Root cause**: Ubuntu 24.04 renamed the package to `libasound2t64`, breaking Playwright versions that hard-coded the old name.
+- **Root Cause Solution**: Never use `ubuntu-latest` for production automation. Always pin the runner to a specific, stable OS version (e.g., `ubuntu-22.04`) to prevent background OS upgrades from breaking dependencies.
+- **Rule**: Pin GitHub runners to verified versions (`ubuntu-22.04`) and use `playwright install-deps` explicitly for robust setup.
