@@ -8,7 +8,7 @@ on:
 
 jobs:
   post:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
 
     steps:
@@ -25,7 +25,9 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Install Playwright Chromium
-        run: playwright install chromium --with-deps
+        run: |
+          playwright install-deps chromium
+          playwright install chromium
 
       - name: Restore LinkedIn session cookies
         # Cookies are stored as a GitHub Actions secret (base64-encoded JSON).

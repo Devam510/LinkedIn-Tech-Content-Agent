@@ -82,6 +82,14 @@
 
 ---
 
+## Phase 7 — Infrastructure Stabilization
+
+- [/] Pin GitHub runner to `ubuntu-22.04` for OS stability
+- [/] Use `playwright install-deps` for robust dependency management
+- [ ] Verify successful scheduled run
+
+---
+
 ## Review
 
 ### Phase 1 Review
