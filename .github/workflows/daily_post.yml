@@ -25,10 +25,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Install Playwright Chromium
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libasound2t64 libnss3 libxss1 libatk-bridge2.0-0 libgtk-3-0 libgbm1 libxcomposite1 libxdamage1 libxrandr2 libxfixes3 libdrm2 libxcb1 libx11-6 libxext6 libxrender1
-          playwright install chromium
+        run: playwright install chromium --with-deps
 
       - name: Restore LinkedIn session cookies
         # Cookies are stored as a GitHub Actions secret (base64-encoded JSON).
