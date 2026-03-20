@@ -110,3 +110,9 @@
 - **Root cause**: Ubuntu 24.04 renamed the package to `libasound2t64`, breaking Playwright versions that hard-coded the old name.
 - **Root Cause Solution**: Never use `ubuntu-latest` for production automation. Always pin the runner to a specific, stable OS version (e.g., `ubuntu-22.04`) to prevent background OS upgrades from breaking dependencies.
 - **Rule**: Pin GitHub runners to verified versions (`ubuntu-22.04`) and use `playwright install-deps` explicitly for robust setup.
+
+### openai SDK 'proxies' error on fresh installs
+- **Date**: 2026-03-20
+- **What happened**: GitHub Actions run "succeeded" but no post appeared on LinkedIn. Logs showed `Client.__init__() got an unexpected keyword argument 'proxies'` from the Groq/OpenAI client.
+- **Root cause**: `openai==1.30.0` passes a `proxies` kwarg to `httpx.Client`. When GitHub installs fresh packages, it pulls `httpx>=0.28.0` which removed the `proxies` argument, causing a crash before any post could be generated.
+- **Rule**: Always pin `httpx` explicitly in `requirements.txt`. Use `httpx>=0.27.0,<0.28.0` to prevent a transitive dependency from breaking the OpenAI SDK. Or upgrade `openai>=1.52.0` which removed the proxies usage internally.
