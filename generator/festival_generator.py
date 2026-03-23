@@ -18,20 +18,21 @@ def build_festival_prompt(festival_name: str) -> str:
     return f"""\
 Today is {festival_name}.
 
-Write a single LinkedIn post to thoughtfully wish your network a wonderful {festival_name}.
+Write a single warm, professional LinkedIn post to wish your network a meaningful {festival_name}.
 
-Structure:
-1. WARM HOOK: A short, genuine greeting for {festival_name}.
-2. THE BUILDER'S TIE-IN: A reflection on how the themes of {festival_name} (like light, renewal, gratitude, hard work, etc.) apply to our lives as builders, developers, or founders.
-3. INQUIRY / CTA: A warm wrap-up asking the audience how they are celebrating or resting.
-4. HASHTAGS: 3-5 relevant tags (including the festival name).
+Guidelines:
+- Open with a genuine, heartfelt sentiment — but NOT a generic "Happy {festival_name}!" first line.
+- Weave in a builder's perspective: how the themes of {festival_name} (light, renewal, gratitude, new beginnings, hard work) connect to careers, teams, or building things.
+- Closing: choose ONE that fits the tone naturally — a warm statement, a reflection, an inspiration, or a question. Rotate between these. Do NOT always end with a question. A beautiful closing line is often better.
+- 3-5 relevant hashtags at the end.
 
 Rules:
-- Maximum 1000 characters total.
-- Separate every section with a blank line.
-- No markdown bold (**text**) — plain text only.
-- Very light use of emojis is okay.
-- Do NOT include section labels (like 'WARM HOOK', 'CTA', etc.) in the text.
+- Maximum 900 characters total (excluding hashtags).
+- Separate paragraphs with a blank line.
+- No markdown formatting — plain text only.
+- 1-2 emojis max, not in the first line.
+- Sound like a warm, real human — not a corporate newsletter or an AI chatbot.
+- Do NOT include section labels in the text.
 """
 
 @retry(
