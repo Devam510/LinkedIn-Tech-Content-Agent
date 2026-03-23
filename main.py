@@ -38,7 +38,7 @@ from filter.scorer import rank_items
 
 from generator.generator import generate_post
 from generator.festival_generator import generate_festival_post
-from generator.image_generator import get_post_image
+from generator.image_generator import get_post_image, get_festival_image
 from formatter.formatter import format_post
 from poster.linkedin_poster import post_to_linkedin
 from poster.draft_saver import save_draft
@@ -87,8 +87,8 @@ def run_festival(festival_name: str) -> None:
         save_draft("", item=festival_item, reason=f"festival_generation_failed: {e}")
         return
 
-    # Generate image — pass the item so the image pipeline works normally
-    image_path = get_post_image(festival_item)
+    # Generate a festival-specific image (NOT the generic article pipeline)
+    image_path = get_festival_image(festival_name)
 
     # Format + publish
     post_text = format_post(raw_post)

@@ -40,8 +40,62 @@ def _build_image_prompt(item: dict) -> str:
         "Flat design, dark background, vivid accent colours, no text. LinkedIn 16:9."
     )
 
+FESTIVAL_VISUAL_MAP: dict[str, str] = {
+    "New Year":         "colorful fireworks bursting over a glowing city skyline at midnight, festive and vibrant",
+    "Diwali":           "hundreds of glowing oil diyas arranged in a pattern, warm golden light, dark night background, Indian festival, cinematic",
+    "Holi":             "people joyfully throwing vivid rainbow powder in the air, bright colors exploding, celebration, India",
+    "Gudi Padwa":       "traditional gudi flag decorated with colorful cloth and mango leaves, Indian New Year, bright morning sunlight, festive background",
+    "Republic Day":     "Indian flag waving proudly against a blue sky, patriotic, national celebration",
+    "Independence Day": "Indian tricolor flag against a golden sunrise sky, patriotic, freedom celebration",
+    "Christmas":        "cozy decorated Christmas tree with glowing lights and ornaments, warmly lit room, festive",
+    "Valentine":        "red and pink hearts on a warm bokeh background, romantic soft light",
+    "Women's Day":      "diverse group of women celebrating together, vibrant colors, empowerment theme",
+    "Earth Day":        "lush green planet earth from space, environmental awareness, clean energy",
+    "Halloween":        "carved glowing jack-o-lanterns in autumn fog, spooky and cinematic",
+    "Raksha Bandhan":   "colorful rakhi threads with flowers on a festive background, Indian celebration",
+    "Teachers' Day":    "books and an apple on a wooden desk, warm light, knowledge and education theme",
+    "Labor Day":        "diverse workers collaborating together, teamwork, professional setting, modern",
+}
 
 
+def _build_festival_image_prompt(festival_name: str) -> str:
+    """Build a descriptive visual prompt specifically for a festival."""
+    for keyword, visual in FESTIVAL_VISUAL_MAP.items():
+        if keyword.lower() in festival_name.lower():
+            return f"{visual}. Vibrant, professional, no text overlays. LinkedIn 16:9."
+    # Generic festive fallback
+    return (
+        f"Festive celebration of {festival_name}, vibrant colors, joyful atmosphere, "
+        "cultural decorations, warm lighting, no text overlays. LinkedIn 16:9."
+    )
+
+
+def get_festival_image(festival_name: str, output: str = IMAGE_OUTPUT) -> str:
+    """
+    Generate a festival-appropriate image.
+    Uses AI (Pollinations) with a festive prompt, falls back to Unsplash or Pillow card.
+    Does NOT attempt og:image scraping (no article URL exists for festivals).
+    """
+    festival_item = {"title": festival_name}  # slim item just for the fallback paths
+    prompt = _build_festival_image_prompt(festival_name)
+
+    # ── 1. Pollinations with festive prompt ────────────────────────────────────
+    try:
+        from generator.pollinations import fetch_pollinations_image
+        # Override the item title with our rich festive prompt
+        return fetch_pollinations_image({"title": prompt}, output)
+    except Exception as e:
+        log.warning(f"[FestivalImage] Pollinations failed ({e}) — trying Unsplash …")
+
+    # ── 2. Unsplash with festival keyword ──────────────────────────────────────
+    try:
+        from generator.unsplash import fetch_unsplash_photo
+        return fetch_unsplash_photo({"title": festival_name}, output_path=output)
+    except Exception as e:
+        log.warning(f"[FestivalImage] Unsplash failed ({e}) — using Pillow fallback …")
+
+    # ── 3. Pillow branded card ─────────────────────────────────────────────────
+    return create_text_card(headline=f"Happy {festival_name}! 🎉", output_path=output)
 
 
 def _fetch_article_og_image(item: dict, output: str) -> str:
