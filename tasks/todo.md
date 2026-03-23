@@ -90,6 +90,18 @@
 
 ---
 
+## Phase 8 — Content Variety & Calendar Events
+
+- [ ] Add Git commit step back to `.github/workflows/daily_post.yml` to save `data/agent.db`
+- [ ] Create `generator/prompt_variations.py` to randomize text structures
+- [ ] Update `generator/generator.py` to use randomized prompts
+- [ ] Create `data/festivals.json` with a list of major tech/cultural events
+- [ ] Implement `generator/festival_generator.py`
+- [ ] Update `main.py` to enforce the strictly-festival-only-on-festival-days rule
+- [ ] Test the pipeline locally
+
+---
+
 ## Review
 
 ### Phase 1 Review

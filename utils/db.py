@@ -112,3 +112,17 @@ def record_post(item_id: int, post_text: str, image_path: str | None, status: st
     conn.commit()
     conn.close()
     log.info(f"Post recorded — status={status}, item_id={item_id}")
+
+
+def check_festival_posted(date_str: str) -> bool:
+    """Return True if we successfully published the festival post for this exact YYYY-MM-DD."""
+    conn = get_conn()
+    row = conn.execute(
+        """SELECT 1 FROM posted_history ph
+           JOIN raw_items ri ON ph.item_id = ri.id
+           WHERE ri.url = ? AND ph.status = 'success'""",
+        (f"festival://{date_str}",),
+    ).fetchone()
+    conn.close()
+    return row is not None
+

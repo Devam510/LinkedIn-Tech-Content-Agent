@@ -71,3 +71,12 @@ jobs:
           path: data/drafts/
           if-no-files-found: ignore
           retention-days: 30
+
+      - name: Commit agent database 
+        if: always()
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add data/agent.db
+          git commit -m "chore: persist agent database" || echo "No changes to commit"
+          git push
