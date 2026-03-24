@@ -126,3 +126,17 @@ def check_festival_posted(date_str: str) -> bool:
     conn.close()
     return row is not None
 
+
+def get_recent_sources(limit: int = 3) -> list[str]:
+    """Return a list of source names for the last N successfully published posts."""
+    conn = get_conn()
+    rows = conn.execute(
+        """SELECT ri.source FROM posted_history ph
+           JOIN raw_items ri ON ph.item_id = ri.id
+           WHERE ph.status = 'success'
+           ORDER BY ph.posted_at DESC
+           LIMIT ?""",
+        (limit,),
+    ).fetchall()
+    conn.close()
+    return [row["source"] for row in rows]

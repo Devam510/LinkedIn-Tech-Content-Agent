@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 from filter.config import HIGH_SIGNAL_KEYWORDS, NOISE_KEYWORDS, MIN_SCORE_THRESHOLD, TOP_N_ITEMS
 from utils.logger import log
+from utils.db import get_recent_sources
 
 
 def _normalize_engagement(score: int, max_val: int = 500) -> float:
@@ -50,25 +51,39 @@ def _is_noise(title: str) -> bool:
     return any(nw.lower() in title_lower for nw in NOISE_KEYWORDS)
 
 
-def score_item(item: dict) -> float:
-    """Compute composite score for a single item."""
+def score_item(item: dict, recent_sources: list[str]) -> float:
+    """Compute composite score for a single item, including source diversity penalty."""
     if _is_noise(item.get("title", "")):
         return 0.0
     eng   = _normalize_engagement(item.get("score", 0))
     kw    = _keyword_score(item.get("title", ""))
     rec   = _recency_score(item.get("published_at"))
+    
     total = (eng * 0.40) + (kw * 0.35) + (rec * 0.25)
-    return round(total, 4)
+
+    # ── Source Diversity Penalty ──
+    # If this source was used heavily in the last few posts, penalize it heavily so we rotate.
+    source = item.get("source", "unknown")
+    penalty = 0.0
+    for past_source in recent_sources:
+        if source == past_source:
+            penalty -= 3.0  # Massive penalty for back-to-back same sources
+
+    return round(max(total + penalty, 0.0), 4)
 
 
 def rank_items(raw_items: list[dict]) -> list[dict]:
     """
-    Score all items, filter noise, sort descending, return top N.
-    Mutates each item dict by adding a 'rank_score' key.
+    Score all items, filter noise, apply diversity penalties, sort descending, return top N.
     """
     log.info(f"[Filter] Scoring {len(raw_items)} items …")
+    
+    recent_sources = get_recent_sources(limit=4)
+    if recent_sources:
+        log.info(f"[Filter] Recent sources to avoid repeating: {recent_sources}")
+
     for item in raw_items:
-        item["rank_score"] = score_item(item)
+        item["rank_score"] = score_item(item, recent_sources)
 
     filtered = [i for i in raw_items if i["rank_score"] >= MIN_SCORE_THRESHOLD]
     ranked   = sorted(filtered, key=lambda x: x["rank_score"], reverse=True)

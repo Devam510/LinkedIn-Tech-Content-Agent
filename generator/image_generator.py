@@ -111,6 +111,10 @@ def _fetch_article_og_image(item: dict, output: str) -> str:
     if not url:
         raise ValueError("No URL in item to fetch og:image from")
 
+    if "github.com" in url.lower():
+        log.info("[Image] Intercepted GitHub URL — skipping OG image to avoid generic repo cards.")
+        raise ValueError("GitHub OG images are generic; forcing fallback.")
+
     log.info(f"[Image] Fetching og:image from: {url[:80]} …")
     headers = {
         "User-Agent": (
