@@ -10,7 +10,13 @@ import time
 from playwright.sync_api import Page
 from utils.logger import log
 
-CONNECTION_NOTE = "Hi! I built an AI agent that posts daily tech news and safely manages my network autonomously. It found your profile—would love to connect!"
+CONNECTION_NOTES = [
+    "Hi! I built an AI agent that posts daily tech news and safely manages my network autonomously. It found your profile—would love to connect!",
+    "Hey! I'm growing my network using a custom AI agent I built from scratch (it's actually sending you this request right now). Let's connect and talk tech!",
+    "Hi there! Fun fact: my autonomous AI agent sent you this request! I built it to post tech news and grow my network. Would love to connect with a fellow builder.",
+    "Hey! I wrote an AI script to automate my LinkedIn presence, and it recommended your profile! Let's connect and share what we're working on.",
+    "Hi! Trying out a new AI agent I created to manage my LinkedIn autonomously. It thought we should connect, and I agree! Hope you're having a great week."
+]
 
 # CRITICAL SAFETY LIMIT
 # LinkedIn allows ~100 requests per week. We run twice a day (14 runs/week).
@@ -84,8 +90,10 @@ def send_connection_requests(page: Page) -> int:
                 # Type the custom message
                 textarea = page.locator('textarea[name="message"], #custom-message').first
                 if textarea.is_visible():
-                    textarea.fill(CONNECTION_NOTE)
+                    selected_note = random.choice(CONNECTION_NOTES)
+                    textarea.fill(selected_note)
                     _human_delay(1, 2)
+
                     
                     # Click the modal's Send button
                     page.locator('button[aria-label="Send now"], button:has-text("Send")').last.click()
