@@ -294,6 +294,13 @@ def _post_attempt(post_text: str, image_path: str | None) -> None:
         except Exception as e:
             log.error(f"[Networker] Failed during connection requests: {e}")
 
+        # ── Step 5 (NEW): Auto-Engager ────────────────────────────────────
+        try:
+            from poster.engager import run_auto_engagement
+            run_auto_engagement(page)
+        except Exception as e:
+            log.error(f"[Engager] Failed during feed engagement: {e}")
+
         # Save refreshed cookies
         save_session(ctx)
         browser.close()
