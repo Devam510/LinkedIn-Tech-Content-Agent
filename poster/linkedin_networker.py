@@ -10,6 +10,8 @@ import time
 from playwright.sync_api import Page
 from utils.logger import log
 
+CONNECTION_NOTE = "Hi! I built an AI agent that posts daily tech news and safely manages my network autonomously. It found your profile—would love to connect!"
+
 # CRITICAL SAFETY LIMIT
 # LinkedIn allows ~100 requests per week. We run twice a day (14 runs/week).
 # 5 * 14 = 70 requests/week. Safe range.
@@ -72,7 +74,27 @@ def send_connection_requests(page: Page) -> int:
             # LinkedIn sometimes asks "You can customize this invitation" or 
             # "How do you know this person?"
             
-            # Case 1: "Send without a note" button exists
+            # Case 1: "Add a note" button exists (The standard customization modal)
+            add_note_btn = page.get_by_role("button", name="Add a note")
+            if add_note_btn.count() > 0 and add_note_btn.first.is_visible():
+                add_note_btn.first.click()
+                log.info("[Networker] Clicked 'Add a note'.")
+                _human_delay(1, 2)
+                
+                # Type the custom message
+                textarea = page.locator('textarea[name="message"], #custom-message').first
+                if textarea.is_visible():
+                    textarea.fill(CONNECTION_NOTE)
+                    _human_delay(1, 2)
+                    
+                    # Click the modal's Send button
+                    page.locator('button[aria-label="Send now"], button:has-text("Send")').last.click()
+                    log.info("[Networker] Sent request WITH custom note.")
+                    actual_sent += 1
+                    _human_delay(2, 4)
+                    continue
+
+            # Fallback: "Send without a note" button exists (if Add a note failed)
             send_without_note = page.get_by_role("button", name="Send without a note")
             if send_without_note.count() > 0 and send_without_note.is_visible():
                 send_without_note.click()
