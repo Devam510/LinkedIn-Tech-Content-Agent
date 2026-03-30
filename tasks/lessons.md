@@ -20,6 +20,12 @@
 
 <!-- Add new lessons below as they occur. Most recent first. -->
 
+### GitHub Action git add failure due to .gitignore
+- **Date**: 2026-03-30
+- **What happened**: GitHub Actions job failed at the "Commit agent database" step because `data/agent.db` was listed in `.gitignore`.
+- **Root cause**: `git add <file>` fails with an error if the file is tracked in `.gitignore`.
+- **Rule**: Use `git add -f <path>` in GitHub Actions workflows when committing a generated/database file that is normally ignored in local development.
+
 ### Initial Setup
 - **Date**: 2026-03-17
 - **What happened**: N/A — baseline entry.
