@@ -9,6 +9,8 @@ jobs:
   post:
     runs-on: ubuntu-22.04
     timeout-minutes: 15
+    permissions:
+      contents: write   # required for git push via GITHUB_TOKEN
 
     steps:
       - name: Checkout repository
